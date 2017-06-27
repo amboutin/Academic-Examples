@@ -1,0 +1,33 @@
+Aaron Boutin		CS372		Project 1
+/****************************************************************************************/
+To Run:
+
+Server: 
+Written in Python, please just enter at CLI "python chatclient.py (port #)", where 
+(port #) is the desired port to listen on.
+
+Client: 
+Written in C/C++, please use makefile, by entering make into CLI and entering, to compile
+and ready program. To start program, enter into CLI "chatclient localhost (port #)", where
+port number is the desired port to connect to.
+
+/****************************************************************************************/
+Server Behavior:
+Upon initialization and verification, program will prompt for user handle. Program will then instruct
+user to wait while other host chooses handle if not done yet. Program allows use to enter messages
+without waiting for a turn after last send. If other host sends before you have completed entering
+a message, recieved message will print and push down your cursor, however, what you have typed is 
+still "live" and enterable. To end, enter "\quit", which will then send to client and continue to listen.
+"
+/****************************************************************************************/
+Client Behavior:
+Upon initialization and verification, program will prompt for user handle.Program will then instruct
+user to wait while other host chooses handle if not done yet. Program allows use to enter messages
+without waiting for a turn after last send.If other host sends before you have completed entering
+a message, recieved message will print and push down your cursor, however, what you have typed is 
+still "live" and enterable. To end, enter "\quit", which will then send to server message.
+/****************************************************************************************/
+Extra Credit: Both implement threads to implement concurrent messaging.
+/****************************************************************************************/
+Ending Comms: If either client or server is the receipt of a desire for the other to quit, they
+will be informed of it and be requested to complete closing the connection with "\quit".
