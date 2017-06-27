@@ -1,0 +1,119 @@
+#!/bin/bash
+# Aaron Boutin CS344
+
+if [[ "$#" -lt 1 || "$#" -gt 2 || $1 != -r* && $1 != -c* ]]; then		# tests for the right number of arguments
+	echo "Usage: stats {-rows|-cols} [file]"
+	exit 1
+fi
+
+trap "rm -f $TMP1 $TMP2 $TMP3 $datafilepath temp* datafile* ; echo 'There was an error with the program or input data' >&2 ; exit 1" SIGHUP SIGINT SIGTERM	# trap to cleanup temp files if program errs
+
+
+
+datafilepath="datafile$$"
+if [ "$#" -eq "1" ]; then			# checks if no file was entered, in which the user may enter their own
+	cat > "$datafilepath"
+elif [ "$#" -eq "2" ]; then			# checks that a file was input, in which a few more tests are run to ensure the file is valid for use
+
+	if [ -a "$2" ]; then			# checks that a file exists
+	echo ""
+	else
+	echo "stats: $2 does not exist." >&2
+	exit 1
+	fi
+	if [ -r "$2" ]; then			# checks that a file is readable
+	rm -f $datafilepath
+	datafilepath=$2
+	else
+	echo "stats: cannot read $2 " >&2
+	exit 1
+	fi
+	if [ -s "$2" ]; then			# checks if the file is empty
+	echo ""
+	else
+	echo "stats: the file $2 is empty." >&2
+	exit 1
+	fi
+	
+fi
+ 
+if [[ $1 == -r* ]]; then			# Column calculations segment
+
+	TMP1="temp_$$"
+	TMP2="temp2_$$"
+
+	echo -e "Average	Median"		# output headers
+
+	while read values; do			# reads in data from however the data was input in to the program as shown as directed into "done"
+		sum=0				# reset variables for the loop
+		counter=0
+		for i in $values; do
+			sum=`expr $sum + $i`			# get sum of values in row
+			counter=`expr $counter + 1`		# get number of values in row
+	done
+		average=`expr $sum / $counter`					# get average of values in row
+	if [ $(($sum % $counter)) -ne 0 ]; then
+		if [ $(( $(( $sum % $counter * 100 )) / $counter )) -ge 50 ]; then      # Since the remainder of modulus math is the fraction part in ratio of the counter, I multiply it by 100 to move what is normally,
+		average=`expr $average + 1`						#      right of the decimal to the left. I then get that value and compare it to 50 (0.50) to see if it should be rounded up.
+		fi									#      if so, I add one to the average to represent that round up that isn't done with integer division.
+	fi
+	echo -e "$values" > $TMP1 				
+	tr '\t' '\n' < $TMP1 > $TMP2			# turn rows back into columns for sorting
+	sort -n $TMP2 > $TMP1				# use the "-n" option on sort to make it stable as 0 and 100 can be sorted funny compared to the other two digit values
+	tr '\n' '\t' < $TMP1 > $TMP2			# after sort, turn back into rows
+
+	var1=$(( $(($counter / 2)) + 1 )) 
+	head  -n "$var1" $TMP1 | tail -n 1 | cat > $TMP2
+	read median < $TMP2
+
+	echo -e "$average	$median"
+	done < $datafilepath	      		# tells read in the while loop the data to work through
+
+
+elif [[ $1 == -c* ]]; then # This is the Column calculating section
+
+	TMP1="temp_$$"
+	TMP2="temp2_$$"
+	TMP3="temp3_$$"
+	
+	echo -e "Averages:"	# print outside the loop, otherwise we get more than one
+
+	columns=$(( $(wc -w < $datafilepath) / 	$(wc -l < $datafilepath) ))	# calcs number of columns in a file for use in cutting
+	for i in $(seq 1 $columns); do						# then use seq to iterate through the number of columns
+		counter=0							# reset variables
+		sum=0
+		average=0
+	
+		cut -f"$i" $datafilepath | sort -n > $TMP1				# get column numbers and sort into temp file, the -f for cut allows to grab fields vs singular columns
+		tr '\n' '\t' < $TMP1 > $TMP2					# turn column into row for calcs
+		read values2 < $TMP2
+		for i in $values2; do
+			counter=`expr $counter + 1`
+			sum=`expr $sum + $i`
+		done
+
+		var1=$(( $(($counter / 2)) + 1 ))	# this chunk of code gets medians. It gets the mid point of the values plus 1, then uses head and tail to trim away eveything else
+		head -n "$var1" $TMP1 > $TMP2
+		tail -n 1 $TMP2 > $TMP1
+		read median < $TMP1			# value is put into variable
+		echo $median >> $TMP3			# stores median values in temp file for later concatenation
+
+		average=`expr $sum / $counter`
+		if [ $(($sum % $counter)) -ne 0 ]; then						# makes sure the value being passed is rational
+			if [ $(( $(( $sum % $counter * 100 )) / $counter )) -ge 50 ]; then 	# Same rounding calculation used in the rows section
+			average=`expr $average + 1`
+			fi
+		fi
+
+		echo -ne "$average\t"
+	done
+	echo -e "\nMedians:"		# Median header
+	tr '\n' '\t' < $TMP3 > $TMP2	# Turns median holding file data into rows
+	cat $TMP2			# prints median data
+	echo -e "\n"
+
+fi
+if [ -a "$TMP3" ]; then			# checks if a temp for TMP# was made since only one of two calulation paths use it
+rm -f $TMP3
+fi
+rm -f $TMP1 $TMP2 temp* datafile*	# cleans up temporary files at the end of the script
