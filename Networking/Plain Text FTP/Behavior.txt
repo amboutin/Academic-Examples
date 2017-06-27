@@ -1,0 +1,36 @@
+Aaron Boutin		CS372		Project 2
+/****************************************************************************************/
+NOTE: This pair of programs only transfers txt file types.
+
+To Run:
+
+ftclient:
+Written in Python, to start program, enter into CLI for each command:
+Directory Listing: "python ftclient targethost controlPort# -l dataPort#" 
+File Request: "python ftclient targethost controlPort# -g FileName dataPort#" where filename includes ".txt" type ending.
+
+ftserver: 
+Written in C, please use makefile, by entering "make" (without quotes) into CLI and entering, to compile
+and ready program. To start, enter at CLI: "ftserver controlPort#""
+
+/****************************************************************************************/
+Server Behavior:
+Server creates socket and waits for client connection. When one is made, it verifies it is a compatible client program
+and receives the request string from the client. It parses it, then determines if a directory listing or file is requested.
+Either prints to screen what it will do. It then waits a couple seconds to give the client time to set up a server socket to connect to.
+After a connect is made, it then processes the rest of the client request.
+For directory listing, it gathers the names and puts them into a string with space delimiters and sends,
+if a file is requested then it opens the file and sends over the connectin one line at a time until end of file is reached.
+If the file is not found, before a dataport connection is made, it sends a value that the client uses to determine not found.
+When complete, it closes the socket and continues to wait for more connections.
+/****************************************************************************************/
+Client Behavior:
+Client validates input before sending to server. Client initiates contact and handshakes with server. 
+Client then sends a request string with applicable values to server for processing. If a file is requested, the
+client waits for a return value indicating whether or not the file is found. 
+The client then creates a socket on teh dataport and listens on it for server connection.
+When a connection is made, the client either receives a string of directory listings and prints each one, or if
+a file is sent then it checks to see if a filename already exists, handling duplicates by appending copy numbers
+the the filenames. It then opens the new file and writes each lines it receives until the transfer is complete. 
+/****************************************************************************************/
+Extra Credit: Server is Multithreaded
