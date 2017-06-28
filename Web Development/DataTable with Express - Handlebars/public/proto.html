@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<link rel="stylesheet" type="text/css" href="style.css">	
+		<meta>
+		<title>DataBase Interface
+		</title>
+	</head>
+	<body>
+	<div>
+		<fieldset>
+			<legend>New Entry</legend>
+		<fieldset>
+		<form name="subForm" action="" method="get">
+			<label>Name: <input type="text" name="name" size="20" maxlength="100"></label>
+			<label>Reps: <input type="text" name="reps" size="20" maxlength="100"></label>
+			<label>Weight: <input type="text" name="weight" size="20" maxlength="100"></label>
+			<label>Date (yyyy-mm-dd): <input type="text" name="date" size="20" maxlength="100"></label>															
+			<label>Lbs: <input type="text" name="lbs" size="20" maxlength="100"></label>
+			<INPUT TYPE="button" NAME="Insert" Value="Insert" onClick="insert()">
+			</form>
+		</fieldset>
+	</fieldset>
+	</div>
+	<div>
+		<table id="table1">
+			<thead>
+				<tr><th>Name</th><th>Reps</th><th>Weight</th><th>Date</th><th>Lbs</th></tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+		<script src="script.js"></script>
+	</body>
+</html>	
