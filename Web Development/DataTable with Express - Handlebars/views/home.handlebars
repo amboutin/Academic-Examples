@@ -1,0 +1,28 @@
+<h1>MySQL Results:</h1>
+<!--<p>{{results}}</p>-->
+<form action="http://flip3.engr.oregonstate.edu:64010/insert" method="get">
+	<fieldset>
+		<legend>Some GET Data</legend>
+		<fieldset>
+			<label>Name<input type="text" name="name" size="20" maxlength="100"></label>
+			<label>Reps<input type="text" name="reps" size="20" maxlength="100"></label>
+			<label>Weight<input type="text" name="weight" size="20" maxlength="100"></label>
+			<label>Date (yyyy-mm-dd)<input type="text" name="date" size="20" maxlength="100"></label>															
+			<label>Lbs<input type="text" name="lbs" size="20" maxlength="100"></label>
+			<input type="submit" value="Submit" />
+		</fieldset>
+	</fieldset>
+</form>
+<table>
+	<thead>
+		<tr>
+			<td>Name</td><td>Reps</td><td>Weight</td><td>Date</td><td>Lbs</td>
+		</tr>
+	</thead>
+	<tbody>
+  		{{#each results}}
+    		<tr><td>{{this.name}}</td><td>{{this.reps}}</td><td>{{this.weight}}</td><td>{{this.date}}</td><td>{{this.lbs}}</td>
+
+  		{{/each}}
+	</tbody>
+</table>
